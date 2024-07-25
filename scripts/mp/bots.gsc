@@ -1061,9 +1061,9 @@ watch_for_override_stuff()
 				last_jump_time = time;
 				
 				// jump shot
-				self BotBuiltinBotMovementOverride( "+gostand" );
+				self BotBuiltinBotButtonOverride( "+gostand" );
 				wait 0.1;
-				self BotBuiltinBotMovementOverride( "~gostand" );
+				self BotBuiltinBotButtonOverride( "~gostand" );
 			}
 		}
 		
