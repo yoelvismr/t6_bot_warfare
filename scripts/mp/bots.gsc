@@ -824,8 +824,8 @@ onBotSpawned()
 	for ( ;; )
 	{
 		self waittill( "spawned_player" );
-		self BotBuiltinClearOverrides( true );
-		self BotBuiltinWeaponOverride( self getcurrentweapon() );
+		self BotBuiltinBotClearOverride( false );
+		self BotBuiltinBotWeaponOverride( self getcurrentweapon() );
 		
 		self thread watch_for_override_stuff();
 		self thread watch_for_melee_override();
@@ -948,9 +948,9 @@ watch_for_melee_override()
 			
 			if ( self isonground() && self getstance() != "prone" && dist < getdvarfloat( "aim_automelee_range" ) && ( getConeDot( threat.origin, self.origin, self getplayerangles() ) > 0.9 || dist < 10 ) )
 			{
-				self BotBuiltinBotMeleeParams( threat getentitynumber(), dist );
-				self BotBuiltinButtonOverride( "melee", "enable" );
-				self BotBuiltinAimOverride();
+				self BotBuiltinBotMeleeParamsOverride( threat getentitynumber(), dist );
+				self BotBuiltinBotButtonOverride( "+melee" );
+				self BotBuiltinBotAimOverride( true );
 				
 				time_left = 1;
 				once = false;
@@ -964,17 +964,17 @@ watch_for_melee_override()
 					if ( !once )
 					{
 						once = true;
-						self BotBuiltinClearButtonOverride( "melee" );
+						self BotBuiltinBotButtonOverride( "~melee" );
 					}
 				}
 				
 				if ( !once )
 				{
-					self BotBuiltinClearButtonOverride( "melee" );
+					self BotBuiltinBotButtonOverride( "~melee" );
 				}
 				
-				self BotBuiltinClearMeleeParams();
-				self BotBuiltinClearAimOverride();
+				self BotBuiltinBotMeleeParamsOverride( false );
+				self BotBuiltinBotAimOverride( false );
 				wait 1;
 				break;
 			}
@@ -1047,13 +1047,13 @@ watch_for_override_stuff()
 					last_jump_time = time;
 					
 					// drop shot
-					self BotBuiltinMovementOverride( 0, 0 );
-					self BotBuiltinButtonOverride( "prone", "enable" );
+					self BotBuiltinBotMovementOverride( 0, 0 );
+					self BotBuiltinBotButtonOverride( "+prone" );
 					
 					wait 1.5;
 					
-					self BotBuiltinClearMovementOverride();
-					self BotBuiltinClearButtonOverride( "prone" );
+					self BotBuiltinBotMovementOverride( false );
+					self BotBuiltinBotButtonOverride( "~prone" );
 				}
 			}
 			else
@@ -1061,9 +1061,9 @@ watch_for_override_stuff()
 				last_jump_time = time;
 				
 				// jump shot
-				self BotBuiltinButtonOverride( "gostand", "enable" );
+				self BotBuiltinBotMovementOverride( "+gostand" );
 				wait 0.1;
-				self BotBuiltinClearButtonOverride( "gostand" );
+				self BotBuiltinBotMovementOverride( "~gostand" );
 			}
 		}
 		
@@ -1463,7 +1463,7 @@ BotBuiltinPrintConsole( s )
 
 /*
 */
-BotBuiltinMovementOverride( a, b )
+BotBuiltinBotMovementOverride( a, b )
 {
 	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmovementoverride" ] ) )
 	{
@@ -1473,57 +1473,27 @@ BotBuiltinMovementOverride( a, b )
 
 /*
 */
-BotBuiltinClearMovementOverride()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearmovementoverride" ] ) )
-	{
-		self [[ level.bot_builtins[ "botclearmovementoverride" ] ]]();
-	}
-}
-
-/*
-*/
-BotBuiltinClearButtonOverride( a )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearbuttonoverride" ] ) )
-	{
-		self [[ level.bot_builtins[ "botclearbuttonoverride" ] ]]( a );
-	}
-}
-
-/*
-*/
-BotBuiltinButtonOverride( a, b )
+BotBuiltinBotButtonOverride( a )
 {
 	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botbuttonoverride" ] ) )
 	{
-		self [[ level.bot_builtins[ "botbuttonoverride" ] ]]( a, b );
+		self [[ level.bot_builtins[ "botbuttonoverride" ] ]]( a );
 	}
 }
 
 /*
 */
-BotBuiltinClearOverrides( a )
+BotBuiltinBotClearOverride( a )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearoverrides" ] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearoverride" ] ) )
 	{
-		self [[ level.bot_builtins[ "botclearoverrides" ] ]]( a );
+		self [[ level.bot_builtins[ "botclearoverride" ] ]]( a );
 	}
 }
 
 /*
 */
-BotBuiltinClearWeaponOverride()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearweaponoverride" ] ) )
-	{
-		self [[ level.bot_builtins[ "botclearweaponoverride" ] ]]();
-	}
-}
-
-/*
-*/
-BotBuiltinWeaponOverride( a )
+BotBuiltinBotWeaponOverride( a )
 {
 	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botweaponoverride" ] ) )
 	{
@@ -1533,52 +1503,22 @@ BotBuiltinWeaponOverride( a )
 
 /*
 */
-BotBuiltinClearButtonOverrides()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearbuttonoverrides" ] ) )
-	{
-		self [[ level.bot_builtins[ "botclearbuttonoverrides" ] ]]();
-	}
-}
-
-/*
-*/
-BotBuiltinAimOverride()
+BotBuiltinBotAimOverride( a )
 {
 	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botaimoverride" ] ) )
 	{
-		self [[ level.bot_builtins[ "botaimoverride" ] ]]();
-	}
-}
-
-/*
-*/
-BotBuiltinClearAimOverride()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botclearaimoverride" ] ) )
-	{
-		self [[ level.bot_builtins[ "botclearaimoverride" ] ]]();
+		self [[ level.bot_builtins[ "botaimoverride" ] ]]( a );
 	}
 }
 
 /*
 	Sets melee params
 */
-BotBuiltinBotMeleeParams( entNum, dist )
+BotBuiltinBotMeleeParamsOverride( entNum, dist )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmeleeparams" ] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmeleeparamsoverride" ] ) )
 	{
-		self [[ level.bot_builtins[ "botmeleeparams" ] ]]( entNum, dist );
-	}
-}
-
-/*
-*/
-BotBuiltinClearMeleeParams()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "clearbotmeleeparams" ] ) )
-	{
-		self [[ level.bot_builtins[ "clearbotmeleeparams" ] ]]();
+		self [[ level.bot_builtins[ "botmeleeparamsoverride" ] ]]( entNum, dist );
 	}
 }
 

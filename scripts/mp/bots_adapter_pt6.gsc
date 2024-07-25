@@ -2,17 +2,11 @@ main()
 {
 	level.bot_builtins[ "printconsole" ] = ::do_printconsole;
 	level.bot_builtins[ "botmovementoverride" ] = ::do_botmovementoverride;
-	level.bot_builtins[ "botclearmovementoverride" ] = ::do_botclearmovementoverride;
-	level.bot_builtins[ "botclearbuttonoverride" ] = ::do_botclearbuttonoverride;
 	level.bot_builtins[ "botbuttonoverride" ] = ::do_botbuttonoverride;
-	level.bot_builtins[ "botclearoverrides" ] = ::do_botclearoverrides;
-	level.bot_builtins[ "botclearweaponoverride" ] = ::do_botclearweaponoverride;
+	level.bot_builtins[ "botclearoverride" ] = ::do_botclearoverride;
 	level.bot_builtins[ "botweaponoverride" ] = ::do_botweaponoverride;
-	level.bot_builtins[ "botclearbuttonoverrides" ] = ::do_botclearbuttonoverrides;
 	level.bot_builtins[ "botaimoverride" ] = ::do_botaimoverride;
-	level.bot_builtins[ "botclearaimoverride" ] = ::do_botclearaimoverride;
-	level.bot_builtins[ "botmeleeparams" ] = ::do_botmeleeparams;
-	level.bot_builtins[ "clearbotmeleeparams" ] = ::do_clearbotmeleeparams;
+	level.bot_builtins[ "botmeleeparamsoverride" ] = ::do_botmeleeparamsoverride;
 	level.bot_builtins[ "getfunction" ] = ::do_getfunction;
 	level.bot_builtins[ "replacefunc" ] = ::do_replacefunc;
 	level.bot_builtins[ "disabledetouronce" ] = ::do_disabledetouronce;
@@ -28,29 +22,14 @@ do_botmovementoverride( a, b )
 	self botmovementoverride( a, b );
 }
 
-do_botclearmovementoverride()
+do_botbuttonoverride( a )
 {
-	self botclearmovementoverride();
+	self botbuttonoverride( a );
 }
 
-do_botclearbuttonoverride( a )
+do_botclearoverride( a )
 {
-	self botclearbuttonoverride( a );
-}
-
-do_botbuttonoverride( a, b )
-{
-	self botbuttonoverride( a, b );
-}
-
-do_botclearoverrides( a )
-{
-	self botclearoverrides( a );
-}
-
-do_botclearweaponoverride()
-{
-	self botclearweaponoverride();
+	self botclearoverride( a );
 }
 
 do_botweaponoverride( a )
@@ -58,19 +37,14 @@ do_botweaponoverride( a )
 	self botweaponoverride( a );
 }
 
-do_botclearbuttonoverrides()
+do_botaimoverride( a )
 {
-	self botclearbuttonoverrides();
+	self botaimoverride( a );
 }
 
-do_botaimoverride()
+do_botmeleeparamsoverride( entNum, dist )
 {
-	self botaimoverride();
-}
-
-do_botclearaimoverride()
-{
-	self botclearaimoverride();
+	self botmeleeparamsoverride( entNum, dist );
 }
 
 do_getfunction( a, b )
@@ -86,14 +60,4 @@ do_replacefunc( a, b )
 do_disabledetouronce( a )
 {
 	disabledetouronce( a );
-}
-
-do_botmeleeparams( entNum, dist )
-{
-	self botmeleeparams( entNum, dist );
-}
-
-do_clearbotmeleeparams()
-{
-	self botclearmeleeparams();
 }

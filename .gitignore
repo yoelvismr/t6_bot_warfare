@@ -8,3 +8,4 @@ mpStats
 mpClassSets
 *.exe
 compiled/
+console_mp.log*
