@@ -14,7 +14,7 @@
 */
 main()
 {
-	level.bw_version = "1.1.1";
+	level.bw_version = "1.2.0";
 	
 	if ( getdvar( "bots_main" ) == "" )
 	{
@@ -33,6 +33,13 @@ main()
 	
 	// fix bot grenade launcher usage
 	BotBuiltinReplaceFunc( BotBuiltinGetFunction( "maps/mp/bots/_bot_combat", "bot_should_hip_fire" ), ::bot_should_hip_fire_replaced );
+
+	// FIX LEAKw
+	BotBuiltinReplaceFunc( BotBuiltinGetFunction( "common_scripts/utility", "_timeout" ), ::_timeout_fix );
+	BotBuiltinReplaceFunc( BotBuiltinGetFunction( "common_scripts/utility", "waittill_multiple" ), ::waittill_multiple_fix );
+	BotBuiltinReplaceFunc( BotBuiltinGetFunction( "common_scripts/utility", "waittill_multiple_ents" ), ::waittill_multiple_ents_fix );
+	BotBuiltinReplaceFunc( BotBuiltinGetFunction( "common_scripts/utility", "waittill_any_return" ), ::waittill_any_return_fix );
+	BotBuiltinReplaceFunc( BotBuiltinGetFunction( "common_scripts/utility", "waittill_any_array_return" ), ::waittill_any_array_return_fix );
 }
 
 /*
@@ -155,6 +162,246 @@ init()
 	thread onPlayerConnect();
 	
 	thread handleBots();
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_multiple_ents_fix_hack( ent )
+{
+	self endon( "death" );
+	ent endon( "die" );
+	
+	while ( ent.threads )
+	{
+		ent waittill( "returned" );
+		ent.threads--;
+	}
+	
+	ent notify( "die" );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_multiple_ents_fix( ent1, string1, ent2, string2, ent3, string3, ent4, string4 )
+{
+	self endon( "death" );
+	ent = spawnstruct();
+	ent.threads = 0;
+	
+	if ( isdefined( ent1 ) )
+	{
+		assert( isdefined( string1 ) );
+		ent1 thread waittill_string( string1, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( ent2 ) )
+	{
+		assert( isdefined( string2 ) );
+		ent2 thread waittill_string( string2, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( ent3 ) )
+	{
+		assert( isdefined( string3 ) );
+		ent3 thread waittill_string( string3, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( ent4 ) )
+	{
+		assert( isdefined( string4 ) );
+		ent4 thread waittill_string( string4, ent );
+		ent.threads++;
+	}
+	
+	self thread waittill_multiple_ents_fix_hack( ent );
+	ent waittill( "die" );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_multiple_fix_hack( ent )
+{
+	self endon( "death" );
+	ent endon( "die" );
+	
+	while ( ent.threads )
+	{
+		ent waittill( "returned" );
+		ent.threads--;
+	}
+	
+	ent notify( "die" );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_multiple_fix( string1, string2, string3, string4, string5 )
+{
+	self endon( "death" );
+	ent = spawnstruct();
+	ent.threads = 0;
+	
+	if ( isdefined( string1 ) )
+	{
+		self thread waittill_string( string1, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( string2 ) )
+	{
+		self thread waittill_string( string2, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( string3 ) )
+	{
+		self thread waittill_string( string3, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( string4 ) )
+	{
+		self thread waittill_string( string4, ent );
+		ent.threads++;
+	}
+	
+	if ( isdefined( string5 ) )
+	{
+		self thread waittill_string( string5, ent );
+		ent.threads++;
+	}
+	
+	self thread waittill_multiple_fix_hack( ent );
+	ent waittill( "die" );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_any_return_fix_hack( ent, string1, string2, string3, string4, string5, string6, string7 )
+{
+	if ( ( !isdefined( string1 ) || string1 != "death" ) && ( !isdefined( string2 ) || string2 != "death" ) && ( !isdefined( string3 ) || string3 != "death" ) && ( !isdefined( string4 ) || string4 != "death" ) && ( !isdefined( string5 ) || string5 != "death" ) && ( !isdefined( string6 ) || string6 != "death" ) && ( !isdefined( string7 ) || string7 != "death" ) )
+	{
+		self endon( "death" );
+	}
+	
+	ent endon( "die" );
+	
+	ent waittill( "returned", msg );
+	ent notify( "die", msg );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_any_return_fix( string1, string2, string3, string4, string5, string6, string7 )
+{
+	if ( ( !isdefined( string1 ) || string1 != "death" ) && ( !isdefined( string2 ) || string2 != "death" ) && ( !isdefined( string3 ) || string3 != "death" ) && ( !isdefined( string4 ) || string4 != "death" ) && ( !isdefined( string5 ) || string5 != "death" ) && ( !isdefined( string6 ) || string6 != "death" ) && ( !isdefined( string7 ) || string7 != "death" ) )
+	{
+		self endon( "death" );
+	}
+	
+	ent = spawnstruct();
+	
+	if ( isdefined( string1 ) )
+	{
+		self thread waittill_string( string1, ent );
+	}
+	
+	if ( isdefined( string2 ) )
+	{
+		self thread waittill_string( string2, ent );
+	}
+	
+	if ( isdefined( string3 ) )
+	{
+		self thread waittill_string( string3, ent );
+	}
+	
+	if ( isdefined( string4 ) )
+	{
+		self thread waittill_string( string4, ent );
+	}
+	
+	if ( isdefined( string5 ) )
+	{
+		self thread waittill_string( string5, ent );
+	}
+	
+	if ( isdefined( string6 ) )
+	{
+		self thread waittill_string( string6, ent );
+	}
+	
+	if ( isdefined( string7 ) )
+	{
+		self thread waittill_string( string7, ent );
+	}
+	
+	self thread waittill_any_return_fix_hack( ent, string1, string2, string3, string4, string5, string6, string7 );
+	
+	ent waittill( "die", msg );
+	return msg;
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+_timeout_fix( delay )
+{
+	self endon( "die" );
+	wait( delay );
+	self notify( "returned", "timeout" );
+	self notify( "die" );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_any_array_return_fix_hack( s_tracker, a_notifies )
+{
+	if ( isinarray( a_notifies, "death" ) )
+	{
+		self endon( "death" );
+	}
+	
+	s_tracker endon( "die" );
+	
+	s_tracker waittill( "returned", msg );
+	s_tracker notify( "die", msg );
+}
+
+/*
+	 FIX THE UAV LEAK
+*/
+waittill_any_array_return_fix( a_notifies )
+{
+	if ( isinarray( a_notifies, "death" ) )
+	{
+		self endon( "death" );
+	}
+	
+	s_tracker = spawnstruct();
+	
+	foreach ( str_notify in a_notifies )
+	{
+		if ( isdefined( str_notify ) )
+		{
+			self thread waittill_string( str_notify, s_tracker );
+		}
+	}
+	
+	self thread waittill_any_array_return_fix_hack( s_tracker, a_notifies );
+	s_tracker waittill( "die", msg );
+	
+	return msg;
 }
 
 /*
